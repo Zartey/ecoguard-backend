@@ -1,9 +1,15 @@
 {
   "dependencies": {
+    "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "^56.0.5",
+    "expo-av": "^16.0.8",
     "expo-crypto": "~56.0.4",
+    "expo-image-picker": "~56.0.15",
     "expo-local-authentication": "~56.0.4",
-    "expo-secure-store": "~56.0.4"
+    "expo-location": "~56.0.15",
+    "expo-print": "~56.0.3",
+    "expo-secure-store": "~56.0.4",
+    "expo-sharing": "~56.0.15"
   }
 }
