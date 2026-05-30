@@ -12,10 +12,10 @@ import TelaInicial from "./screens/TelaInicial";
 import Denuncia from "./screens/Denuncia";
 import { apiRequest, API_URL } from "./config/api";
 
-const SESSION_KEY = "@ecoguard_session";
-const BIOMETRIC_TOKEN_KEY = "@ecoguard_biometric_token";
-const BIOMETRIC_ENABLED_KEY = "@ecoguard_biometric_enabled";
-const BIOMETRIC_FALLBACK_KEY = "@ecoguard_biometric_token_fallback";
+const SESSION_KEY = "ecoguard_session";
+const BIOMETRIC_TOKEN_KEY = "ecoguard_biometric_token";
+const BIOMETRIC_ENABLED_KEY = "ecoguard_biometric_enabled";
+const BIOMETRIC_FALLBACK_KEY = "ecoguard_biometric_token_fallback";
 
 const EMPTY_LOGIN_FORM = { usuario: "", senha: "" };
 

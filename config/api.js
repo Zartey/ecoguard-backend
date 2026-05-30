@@ -1,4 +1,4 @@
-export const API_URL = "https://ecoguard-api-7m5d.onrender.com";
+export const API_URL = "https://ecoguard-api-hzut.onrender.com";
 
 export async function apiRequest(path, options = {}) {
   try {
