@@ -16,7 +16,6 @@ import { Feather } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import * as Crypto from "expo-crypto";
-import { Video, ResizeMode } from "expo-av";
 import { Button, Field, Header } from "../components/UI";
 
 const EMPTY_FORM = {
@@ -398,16 +397,20 @@ export default function Denuncia({
 
           <Text style={styles.label}>Evidência</Text>
 
-          {form.video ? (
-            <Video
-              source={{ uri: form.video }}
-              style={styles.previewMedia}
-              useNativeControls
-              resizeMode={ResizeMode.CONTAIN}
-            />
-          ) : form.imagem ? (
-            <Image source={{ uri: form.imagem }} style={styles.previewMedia} />
-          ) : (
+        
+       {form.video ? (
+  <View style={styles.mediaPlaceholder}>
+    <Feather name="video" size={34} color="#64748B" />
+    <Text style={styles.placeholderText}>Vídeo anexado</Text>
+  </View>
+) : form.imagem ? (
+  <Image source={{ uri: form.imagem }} style={styles.previewMedia} />
+) : (
+  <View style={styles.mediaPlaceholder}>
+    <Feather name="image" size={34} color="#64748B" />
+    <Text style={styles.placeholderText}>Nenhuma mídia anexada</Text>
+  </View>
+)}
             <View style={styles.mediaPlaceholder}>
               <Feather name="image" size={34} color="#64748B" />
 

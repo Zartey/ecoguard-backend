@@ -17,7 +17,6 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { Video, ResizeMode } from "expo-av";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 import { Button, Field, Header } from "../components/UI";
@@ -683,22 +682,23 @@ export default function TelaInicial({
         onPress={() => setSelectedReport(item)}
       >
         {item.video ? (
-          <View style={styles.reportVideoBox}>
-            <Video
-              source={{ uri: item.video }}
-              style={styles.reportVideo}
-              useNativeControls
-              resizeMode={ResizeMode.CONTAIN}
-              shouldPlay={false}
-              isMuted={false}
-            />
+  <View style={styles.mediaPlaceholder}>
+    <Feather name="video" size={34} color="#64748B" />
+    <Text style={styles.placeholderText}>Vídeo anexado</Text>
 
-            <View pointerEvents="none" style={styles.videoBadge}>
-              <Feather name="video" size={14} color="#FFFFFF" />
-              <Text style={styles.videoBadgeText}>Vídeo</Text>
-            </View>
-          </View>
-        ) : item.imagem ? (
+    <View pointerEvents="none" style={styles.videoBadge}>
+      <Feather name="video" size={14} color="#FFFFFF" />
+      <Text style={styles.videoBadgeText}>Vídeo</Text>
+    </View>
+  </View>
+) : item.imagem ? (
+  <Image source={{ uri: item.imagem }} style={styles.reportImage} />
+) : (
+  <View style={styles.mediaPlaceholder}>
+    <Feather name="image" size={34} color="#64748B" />
+    <Text style={styles.placeholderText}>Nenhuma mídia anexada</Text>
+  </View>
+)}
           <Image source={{ uri: item.imagem }} style={styles.reportImage} />
         ) : (
           <View style={styles.imagePlaceholder}>
@@ -769,19 +769,13 @@ export default function TelaInicial({
               </View>
 
               {selectedReport.video ? (
-                <View style={styles.detailVideoBox}>
-                  <Video
-                    source={{ uri: selectedReport.video }}
-                    style={styles.detailVideo}
-                    useNativeControls
-                    resizeMode={ResizeMode.CONTAIN}
-                    shouldPlay={false}
-                    isMuted={false}
-                  />
-                </View>
-              ) : selectedReport.imagem ? (
-                <Image source={{ uri: selectedReport.imagem }} style={styles.detailImage} />
-              ) : null}
+  <View style={styles.detailVideoBox}>
+    <Feather name="video" size={34} color="#64748B" />
+    <Text style={styles.placeholderText}>Vídeo anexado</Text>
+  </View>
+) : selectedReport.imagem ? (
+  <Image source={{ uri: selectedReport.imagem }} style={styles.detailImage} />
+) : null}
 
               <View style={[styles.statusBadge, getStatusStyle(selectedReport.status)]}>
                 <Text style={styles.statusText}>{selectedReport.status}</Text>
