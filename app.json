@@ -16,6 +16,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.zartey.ecoguard",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -24,6 +25,14 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "35afcdb3-e21a-4d9e-9a01-29c1d14da3c3"
+      }
+    },
+    "plugins": [
+      "expo-secure-store"
+    ]
   }
 }
