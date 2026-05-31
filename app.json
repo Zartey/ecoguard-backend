@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "ecoguard--final",
+    "name": "EcoGuard",
     "slug": "snack-ef5e3a67-eacd-4017-86a9-437af9e350f0",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/LogoMarca.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -18,7 +18,7 @@
     "android": {
       "package": "com.zartey.ecoguard",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/LogoMarca.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true
@@ -33,7 +33,8 @@
     },
     "plugins": [
       "expo-secure-store",
-      "expo-sharing"
+      "expo-sharing",
+      "expo-video"
     ]
   }
 }

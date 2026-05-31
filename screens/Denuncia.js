@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
+import VideoPlayer from "../components/VideoPlayer";
 import * as Location from "expo-location";
 import * as Crypto from "expo-crypto";
 import { Button, Field, Header } from "../components/UI";
@@ -399,10 +400,7 @@ export default function Denuncia({
 
         
        {form.video ? (
-  <View style={styles.mediaPlaceholder}>
-    <Feather name="video" size={34} color="#64748B" />
-    <Text style={styles.placeholderText}>Vídeo anexado</Text>
-  </View>
+  <VideoPlayer uri={form.video} style={styles.previewMedia} />
 ) : form.imagem ? (
   <Image source={{ uri: form.imagem }} style={styles.previewMedia} />
 ) : (

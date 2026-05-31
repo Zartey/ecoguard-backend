@@ -18,6 +18,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import * as Print from "expo-print";
+import VideoPlayer from "../components/VideoPlayer";
 import * as Sharing from "expo-sharing";
 import { Button, Field, Header } from "../components/UI";
 
@@ -682,9 +683,8 @@ export default function TelaInicial({
         onPress={() => setSelectedReport(item)}
       >
         {item.video ? (
-  <View style={styles.mediaPlaceholder}>
-    <Feather name="video" size={34} color="#64748B" />
-    <Text style={styles.placeholderText}>Vídeo anexado</Text>
+  <View>
+    <VideoPlayer uri={item.video} style={styles.reportImage} />
 
     <View pointerEvents="none" style={styles.videoBadge}>
       <Feather name="video" size={14} color="#FFFFFF" />
@@ -769,10 +769,7 @@ export default function TelaInicial({
               </View>
 
               {selectedReport.video ? (
-  <View style={styles.detailVideoBox}>
-    <Feather name="video" size={34} color="#64748B" />
-    <Text style={styles.placeholderText}>Vídeo anexado</Text>
-  </View>
+  <VideoPlayer uri={selectedReport.video} style={styles.detailImage} />
 ) : selectedReport.imagem ? (
   <Image source={{ uri: selectedReport.imagem }} style={styles.detailImage} />
 ) : null}
