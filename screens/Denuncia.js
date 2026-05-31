@@ -347,19 +347,19 @@ const baseReport = {
           {
             text: "OK",
             onPress: voltar,
-          },
+          }, 
         ]
       );
     } catch (error) {
-      console.log("Erro ao criar denúncia:", error);
+  console.log("Erro ao criar denúncia:", error);
 
-      Alert.alert(
-        "Erro",
-        "Não foi possível criar a denúncia. Tente novamente."
-      );
-    } finally {
-      setSaving(false);
-    }
+  Alert.alert(
+    "Erro ao criar denúncia",
+    error?.message || "Não foi possível criar a denúncia. Tente novamente."
+  );
+} finally {
+  setSaving(false);
+}
   }
 
   return (
@@ -409,7 +409,6 @@ const baseReport = {
           />
 
           <Text style={styles.label}>Evidência</Text>
-          <Text style={styles.label}>Evidência</Text>
 
 {form.video ? (
   <VideoPlayer uri={form.video} style={styles.previewMedia} />
@@ -428,12 +427,6 @@ const baseReport = {
     </Text>
   </View>
 )}
-
-<View style={styles.mediaActions}></View>
-
-        
-    
-
           <View style={styles.mediaActions}>
             <TouchableOpacity
               style={styles.mediaButton}

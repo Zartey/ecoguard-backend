@@ -1,5 +1,21 @@
+import * as FileSystem from "expo-file-system/legacy";
+
 const CLOUDINARY_CLOUD_NAME = "dg4si6icv";
 const CLOUDINARY_UPLOAD_PRESET = "ecoguard_upload";
+
+function getMimeType(fileUri, type = "image") {
+  const extension = String(fileUri).split(".").pop()?.toLowerCase();
+
+  if (type === "video") {
+    if (extension === "mov") return "video/quicktime";
+    if (extension === "webm") return "video/webm";
+    return "video/mp4";
+  }
+
+  if (extension === "png") return "image/png";
+  if (extension === "webp") return "image/webp";
+  return "image/jpeg";
+}
 
 export async function uploadToCloudinary(fileUri, type = "image") {
   if (!fileUri) return null;
@@ -8,25 +24,17 @@ export async function uploadToCloudinary(fileUri, type = "image") {
     return fileUri;
   }
 
-  const formData = new FormData();
+  const mimeType = getMimeType(fileUri, type);
 
-  const fileName = fileUri.split("/").pop() || `ecoguard-${Date.now()}`;
-  const extension = fileName.split(".").pop()?.toLowerCase();
-
-  let mimeType = "image/jpeg";
-
-  if (type === "video") {
-    mimeType = extension === "mov" ? "video/quicktime" : "video/mp4";
-  } else {
-    mimeType = extension === "png" ? "image/png" : "image/jpeg";
-  }
-
-  formData.append("file", {
-    uri: fileUri,
-    name: fileName,
-    type: mimeType,
+  const base64 = await FileSystem.readAsStringAsync(fileUri, {
+    encoding: FileSystem.EncodingType.Base64,
   });
 
+  const dataUri = `data:${mimeType};base64,${base64}`;
+
+  const formData = new FormData();
+
+  formData.append("file", dataUri);
   formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
   formData.append("folder", "ecoguard");
 
@@ -40,11 +48,23 @@ export async function uploadToCloudinary(fileUri, type = "image") {
     }
   );
 
-  const data = await response.json();
+  const responseText = await response.text();
+
+  let data = null;
+
+  try {
+    data = JSON.parse(responseText);
+  } catch (error) {
+    console.log("Resposta Cloudinary não JSON:", responseText);
+  }
 
   if (!response.ok) {
-    console.log("Erro Cloudinary:", data);
-    throw new Error(data?.error?.message || "Erro ao enviar mídia.");
+    console.log("Erro Cloudinary:", data || responseText);
+
+    throw new Error(
+      data?.error?.message ||
+        "Não foi possível enviar a mídia para a nuvem."
+    );
   }
 
   return data.secure_url;

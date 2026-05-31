@@ -248,41 +248,46 @@ export default function TelaInicial({
     );
   }
 
-  async function likeReport(reportId) {
-    if (!currentUser?.id) return;
-    if (likingReportIdRef.current === reportId) return;
+async function likeReport(reportId) {
+  if (!currentUser?.id) return;
+  if (likingReportIdRef.current === reportId) return;
 
-    try {
-      likingReportIdRef.current = reportId;
+  likingReportIdRef.current = reportId;
 
-      const updated = reports.map((report) => {
-        if (report.id !== reportId) return report;
+  const updated = reports.map((report) => {
+    if (report.id !== reportId) return report;
 
-        const likedBy = Array.isArray(report.likedBy) ? report.likedBy : [];
-        const alreadyLiked = likedBy.includes(currentUser.id);
+    const likedBy = Array.isArray(report.likedBy) ? report.likedBy : [];
+    const alreadyLiked = likedBy.includes(currentUser.id);
 
-        return {
-          ...report,
-          likes: alreadyLiked
-            ? Math.max(0, (report.likes || 0) - 1)
-            : (report.likes || 0) + 1,
-          likedBy: alreadyLiked
-            ? likedBy.filter((id) => id !== currentUser.id)
-            : [...likedBy, currentUser.id],
-        };
-      });
+    return {
+      ...report,
+      likes: alreadyLiked
+        ? Math.max(0, (report.likes || 0) - 1)
+        : (report.likes || 0) + 1,
+      likedBy: alreadyLiked
+        ? likedBy.filter((id) => id !== currentUser.id)
+        : [...likedBy, currentUser.id],
+    };
+  });
 
-      // Mantém o modal aberto e não dispara Alert/auditoria aqui.
-      // Assim o clique em curtir não fica abrindo e fechando telas.
-      await saveReports(updated);
-    } catch (error) {
-      console.log("Erro ao curtir denúncia:", error);
-    } finally {
-      setTimeout(() => {
-        likingReportIdRef.current = null;
-      }, 500);
-    }
+  const updatedSelected = updated.find((report) => report.id === reportId);
+
+  if (updatedSelected) {
+    setSelectedReport(updatedSelected);
   }
+
+  try {
+    await saveReports(updated);
+  } catch (error) {
+    console.log("Erro ao curtir denúncia:", error);
+    Alert.alert("Erro", "Não foi possível salvar a curtida.");
+  } finally {
+    setTimeout(() => {
+      likingReportIdRef.current = null;
+    }, 400);
+  }
+}
 
   async function shareReport(report) {
     try {
@@ -839,15 +844,16 @@ function renderReport({ item }) {
               ) : null}
 
               <TouchableOpacity
-                activeOpacity={0.85}
-                style={styles.likeButton}
-                onPress={() => runOnce(() => likeReport(selectedReport.id))}
-              >
-                <Feather name="thumbs-up" size={18} color="#166534" />
-                <Text style={styles.likeButtonText}>
-                  Curtir ({(reports.find((item) => item.id === selectedReport.id) || selectedReport).likes || 0})
-                </Text>
-              </TouchableOpacity>
+  activeOpacity={0.85}
+  style={styles.likeButton}
+  onPress={() => likeReport(selectedReport.id)}
+>
+  <Feather name="thumbs-up" size={18} color="#166534" />
+
+  <Text style={styles.likeButtonText}>
+    Curtir ({selectedReport.likes || 0})
+  </Text>
+</TouchableOpacity>
 
               <Button
                 title="Compartilhar código"
