@@ -18,7 +18,7 @@
     "android": {
       "package": "com.zartey.ecoguard",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/LogoMarca.png",
+        "foregroundImage": "./assets/apk-icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true
