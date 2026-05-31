@@ -50,6 +50,7 @@ export default function TelaInicial({
   const [ownReportsModal, setOwnReportsModal] = useState(false);
   const [filter, setFilter] = useState("todas");
   const likingReportIdRef = useRef(null);
+  const actionLockRef = useRef(false);
 
   const [profileForm, setProfileForm] = useState({
     nome: currentUser?.nome || "",
@@ -90,7 +91,11 @@ export default function TelaInicial({
   ).length;
 
   const filteredReports = useMemo(() => {
-    let source = reports;
+  let source = [...reports].sort((a, b) => {
+    const dateA = new Date(a.createdAt || 0).getTime();
+    const dateB = new Date(b.createdAt || 0).getTime();
+    return dateB - dateA;
+  });
 
 
     if (filter === "pendentes") {
@@ -197,6 +202,20 @@ export default function TelaInicial({
 
     return { reportToUse, updatedReports };
   }
+  async function runOnce(callback) {
+  if (actionLockRef.current) return;
+
+  try {
+    actionLockRef.current = true;
+    await callback();
+  } catch (error) {
+    console.log("Erro ao executar ação:", error);
+  } finally {
+    setTimeout(() => {
+      actionLockRef.current = false;
+    }, 700);
+  }
+}
 
   async function openReportByCode() {
     const code = shareSearch.trim();
@@ -674,77 +693,70 @@ export default function TelaInicial({
     if (status === "Em análise") return styles.statusAnalysis;
     return styles.statusPending;
   }
+function renderReport({ item }) {
+  return (
+    <TouchableOpacity
+      activeOpacity={0.9}
+      style={styles.reportCard}
+      onPress={() => setSelectedReport(item)}
+    >
+      {item.video ? (
+        <View style={styles.reportMediaBox}>
+          <VideoPlayer uri={item.video} style={styles.reportImage} />
 
-  function renderReport({ item }) {
-    return (
-      <TouchableOpacity
-        activeOpacity={0.9}
-        style={styles.reportCard}
-        onPress={() => setSelectedReport(item)}
-      >
-        {item.video ? (
-  <View>
-    <VideoPlayer uri={item.video} style={styles.reportImage} />
-
-    <View pointerEvents="none" style={styles.videoBadge}>
-      <Feather name="video" size={14} color="#FFFFFF" />
-      <Text style={styles.videoBadgeText}>Vídeo</Text>
-    </View>
-  </View>
-) : item.imagem ? (
-  <Image source={{ uri: item.imagem }} style={styles.reportImage} />
-) : (
-  <View style={styles.mediaPlaceholder}>
-    <Feather name="image" size={34} color="#64748B" />
-    <Text style={styles.placeholderText}>Nenhuma mídia anexada</Text>
-  </View>
-)}
-          <Image source={{ uri: item.imagem }} style={styles.reportImage} />
-        ) : (
-          <View style={styles.imagePlaceholder}>
-            <Feather name="image" size={32} color="#64748B" />
-            <Text style={styles.imagePlaceholderText}>Sem imagem ou vídeo</Text>
+          <View pointerEvents="none" style={styles.videoBadge}>
+            <Feather name="video" size={14} color="#FFFFFF" />
+            <Text style={styles.videoBadgeText}>Vídeo</Text>
           </View>
-        )}
+        </View>
+      ) : item.imagem ? (
+        <Image source={{ uri: item.imagem }} style={styles.reportImage} />
+      ) : (
+        <View style={styles.imagePlaceholder}>
+          <Feather name="image" size={32} color="#64748B" />
+          <Text style={styles.imagePlaceholderText}>Sem imagem ou vídeo</Text>
+        </View>
+      )}
 
-        <View style={styles.reportContent}>
-          <View style={styles.rowBetween}>
-            <Text style={styles.reportType} numberOfLines={1}>
-              {item.tipo}
-            </Text>
-            <View style={[styles.statusBadge, getStatusStyle(item.status)]}>
-              <Text style={styles.statusText}>{item.status}</Text>
-            </View>
-          </View>
-
-          <Text style={styles.reportDescription} numberOfLines={3}>
-            {item.descricao}
+      <View style={styles.reportContent}>
+        <View style={styles.rowBetween}>
+          <Text style={styles.reportType} numberOfLines={1}>
+            {item.tipo}
           </Text>
 
-          <View style={styles.reportInfoRow}>
-            <View style={styles.infoItem}>
-              <Feather name="calendar" size={14} color="#64748B" />
-              <Text style={styles.reportMeta}>{item.data}</Text>
-            </View>
-            <View style={styles.infoItem}>
-              <Feather name="user" size={14} color="#64748B" />
-              <Text style={styles.reportMeta} numberOfLines={1}>
-                {item.userName}
-              </Text>
-            </View>
+          <View style={[styles.statusBadge, getStatusStyle(item.status)]}>
+            <Text style={styles.statusText}>{item.status}</Text>
+          </View>
+        </View>
+
+        <Text style={styles.reportDescription} numberOfLines={3}>
+          {item.descricao}
+        </Text>
+
+        <View style={styles.reportInfoRow}>
+          <View style={styles.infoItem}>
+            <Feather name="calendar" size={14} color="#64748B" />
+            <Text style={styles.reportMeta}>{item.data}</Text>
           </View>
 
-          <View style={styles.codeBox}>
-            <Feather name="hash" size={14} color="#166534" />
-            <Text style={styles.shareCode} numberOfLines={1}>
-              {item.shareCode || "Código será gerado ao compartilhar"}
+          <View style={styles.infoItem}>
+            <Feather name="user" size={14} color="#64748B" />
+            <Text style={styles.reportMeta} numberOfLines={1}>
+              {item.userName}
             </Text>
           </View>
         </View>
-      </TouchableOpacity>
-    );
-  }
 
+        <View style={styles.codeBox}>
+          <Feather name="hash" size={14} color="#166534" />
+          <Text style={styles.shareCode} numberOfLines={1}>
+            {item.shareCode || "Código será gerado ao compartilhar"}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+}
   function ReportDetailsModal() {
     if (!selectedReport) return null;
 
@@ -829,7 +841,7 @@ export default function TelaInicial({
               <TouchableOpacity
                 activeOpacity={0.85}
                 style={styles.likeButton}
-                onPress={() => likeReport(selectedReport.id)}
+                onPress={() => runOnce(() => likeReport(selectedReport.id))}
               >
                 <Feather name="thumbs-up" size={18} color="#166534" />
                 <Text style={styles.likeButtonText}>
@@ -841,7 +853,7 @@ export default function TelaInicial({
                 title="Compartilhar código"
                 variant="outline"
                 icon="share-2"
-                onPress={() => shareReport(selectedReport)}
+               onPress={() => runOnce(() => shareReport(selectedReport))}
               />
 
               {selectedReport.latitude ? (
@@ -849,7 +861,7 @@ export default function TelaInicial({
                   title="Abrir no mapa"
                   variant="soft"
                   icon="map-pin"
-                  onPress={() => openMaps(selectedReport)}
+                  onPress={() => runOnce(() => openMaps(selectedReport))}
                 />
               ) : null}
 
@@ -860,7 +872,7 @@ export default function TelaInicial({
                   title="Marcar como em análise"
                   variant="soft"
                   icon="search"
-                  onPress={() => markReportAsAnalysis(selectedReport)}
+                  onPress={() => runOnce(() => markReportAsAnalysis(selectedReport))}
                 />
               ) : null}
 
@@ -869,7 +881,7 @@ export default function TelaInicial({
                   title="Voltar para pendente"
                   variant="outline"
                   icon="clock"
-                  onPress={() => markReportAsPending(selectedReport)}
+                  onPress={() => runOnce(() => markReportAsPending(selectedReport))}
                 />
               ) : null}
 
@@ -877,7 +889,7 @@ export default function TelaInicial({
                 <Button
                   title="Solucionar caso"
                   icon="check-circle"
-                  onPress={() => openSolution(selectedReport)}
+                  onPress={() => runOnce(() => openSolution(selectedReport))}
                 />
               ) : null}
 
@@ -886,7 +898,7 @@ export default function TelaInicial({
                   title="Excluir denúncia"
                   variant="danger"
                   icon="trash-2"
-                  onPress={() => deleteReport(selectedReport)}
+                  onPress={() => runOnce(() => deleteReport(selectedReport))}
                 />
               ) : null}
             </ScrollView>
@@ -1500,8 +1512,14 @@ const styles = StyleSheet.create({
   },
   reportImage: {
     width: "100%",
-    height: 165,
+    height: 190,
   },
+  reportMediaBox: {
+  width: "100%",
+  height: 190,
+  position: "relative",
+  backgroundColor: "#0F172A",
+},
   reportVideoBox: {
     width: "100%",
     height: 190,
@@ -1916,4 +1934,5 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontSize: 12,
   },
+  
 });

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { uploadToCloudinary } from "../config/cloudinary";
 import {
   Alert,
   Image,
@@ -272,28 +273,39 @@ export default function Denuncia({
         return;
       }
 
-      setSaving(true);
+    setSaving(true);
 
-      const createdAt = new Date().toISOString();
+let imagemUrl = null;
+let videoUrl = null;
 
-      const baseReport = {
-        id: `rep-${Date.now()}`,
-        userId: currentUser.id,
-        userName: currentUser.nome,
-        tipo,
-        descricao,
-        status: "Pendente",
-        data: new Date().toLocaleDateString("pt-BR"),
-        createdAt,
-        latitude: location?.coords?.latitude || null,
-        longitude: location?.coords?.longitude || null,
-        imagem: form.imagem || null,
-        video: form.video || null,
-        likes: 0,
-        likedBy: [],
-        shareCode: gerarCodigoCompartilhamento(tipo),
-        solution: null,
-      };
+if (form.imagem) {
+  imagemUrl = await uploadToCloudinary(form.imagem, "image");
+}
+
+if (form.video) {
+  videoUrl = await uploadToCloudinary(form.video, "video");
+}
+
+const createdAt = new Date().toISOString();
+
+const baseReport = {
+  id: `rep-${Date.now()}`,
+  userId: currentUser.id,
+  userName: currentUser.nome,
+  tipo,
+  descricao,
+  status: "Pendente",
+  data: new Date().toLocaleDateString("pt-BR"),
+  createdAt,
+  latitude: location?.coords?.latitude || null,
+  longitude: location?.coords?.longitude || null,
+  imagem: imagemUrl,
+  video: videoUrl,
+  likes: 0,
+  likedBy: [],
+  shareCode: gerarCodigoCompartilhamento(tipo),
+  solution: null,
+};
 
       const evidenceHash = await gerarHashEvidencia(baseReport);
 
@@ -397,30 +409,30 @@ export default function Denuncia({
           />
 
           <Text style={styles.label}>Evidência</Text>
+          <Text style={styles.label}>Evidência</Text>
 
-        
-       {form.video ? (
+{form.video ? (
   <VideoPlayer uri={form.video} style={styles.previewMedia} />
 ) : form.imagem ? (
   <Image source={{ uri: form.imagem }} style={styles.previewMedia} />
 ) : (
   <View style={styles.mediaPlaceholder}>
     <Feather name="image" size={34} color="#64748B" />
-    <Text style={styles.placeholderText}>Nenhuma mídia anexada</Text>
+
+    <Text style={styles.mediaPlaceholderTitle}>
+      Nenhuma mídia selecionada
+    </Text>
+
+    <Text style={styles.mediaPlaceholderText}>
+      Escolha uma imagem ou vídeo para anexar à denúncia.
+    </Text>
   </View>
 )}
-            <View style={styles.mediaPlaceholder}>
-              <Feather name="image" size={34} color="#64748B" />
 
-              <Text style={styles.mediaPlaceholderTitle}>
-                Nenhuma mídia selecionada
-              </Text>
+<View style={styles.mediaActions}></View>
 
-              <Text style={styles.mediaPlaceholderText}>
-                Escolha uma imagem ou vídeo para anexar à denúncia.
-              </Text>
-            </View>
-          )}
+        
+    
 
           <View style={styles.mediaActions}>
             <TouchableOpacity
