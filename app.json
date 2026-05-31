@@ -8,9 +8,9 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/icon.png",
+      "image": "./assets/splash-icon",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#D8F5D2"
     },
     "ios": {
       "supportsTablet": true
@@ -19,7 +19,7 @@
       "package": "com.zartey.ecoguard",
       "adaptiveIcon": {
         "foregroundImage": "./assets/apk-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#D8F5D2"
       },
       "edgeToEdgeEnabled": true
     },
