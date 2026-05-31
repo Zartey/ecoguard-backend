@@ -61,7 +61,7 @@ export default function Login({
       <ScrollView contentContainerStyle={styles.authContainer}>
         <View style={styles.brandIcon}>
           <Image
-            source={require("../assets/LogoMarca-.png")}
+            source={require("../assets/LogoMarca.png")}
             style={styles.logo}
           />
         </View>
