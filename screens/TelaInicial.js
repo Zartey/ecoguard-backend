@@ -280,12 +280,11 @@ async function likeReport(reportId) {
   try {
     await saveReports(updated);
   } catch (error) {
-    console.log("Erro ao curtir denúncia:", error);
-    Alert.alert("Erro", "Não foi possível salvar a curtida.");
+    console.log("Erro ao salvar curtida:", error);
   } finally {
     setTimeout(() => {
       likingReportIdRef.current = null;
-    }, 400);
+    }, 500);
   }
 }
 
@@ -762,6 +761,7 @@ function renderReport({ item }) {
     </TouchableOpacity>
   );
 }
+
   function ReportDetailsModal() {
     if (!selectedReport) return null;
 
@@ -843,7 +843,7 @@ function renderReport({ item }) {
                 </View>
               ) : null}
 
-              <TouchableOpacity
+<TouchableOpacity
   activeOpacity={0.85}
   style={styles.likeButton}
   onPress={() => likeReport(selectedReport.id)}
@@ -927,7 +927,7 @@ function renderReport({ item }) {
         </Text>
       </TouchableOpacity>
     );
-  }
+}
 
   return (
     <SafeAreaView style={styles.screen}>
